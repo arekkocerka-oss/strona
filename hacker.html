@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<title>Hack Simulator</title>
+
+<style>
+  body {
+    margin: 0;
+    background: black;
+    color: #00ff88;
+    font-family: monospace;
+    overflow: hidden;
+  }
+
+  #screen {
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .glow {
+    text-shadow: 0 0 5px #00ff88;
+  }
+
+  /* START SCREEN */
+  #startScreen {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  #startBtn {
+    font-size: 50px;
+    padding: 20px 60px;
+    border: 2px solid #00ff88;
+    background: transparent;
+    color: #00ff88;
+    cursor: pointer;
+    text-shadow: 0 0 10px #00ff88;
+  }
+
+  #startBtn:hover {
+    background: #00ff88;
+    color: black;
+  }
+
+  /* GOTOWE overlay */
+  #done {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: rgba(0,0,0,0.7);
+    z-index: 5;
+  }
+
+  #doneText {
+    font-size: 60px;
+    text-shadow: 0 0 20px #00ff88;
+  }
+
+  #bar {
+    width: 300px;
+    height: 12px;
+    border: 1px solid #00ff88;
+    overflow: hidden;
+  }
+
+  #barFill {
+    height: 100%;
+    width: 0%;
+    background: #00ff88;
+  }
+
+  /* scanlines */
+  #scan {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0,255,136,0.04),
+      rgba(0,255,136,0.04) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+    pointer-events: none;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="startScreen">
+  <button id="startBtn">START</button>
+</div>
+
+<div id="screen" class="glow">SYSTEM READY...\n</div>
+
+<div id="done">
+  <div id="doneText">GOTOWE</div>
+  <div id="bar"><div id="barFill"></div></div>
+</div>
+
+<div id="scan"></div>
+
+<script>
+const screen = document.getElementById("screen");
+const startBtn = document.getElementById("startBtn");
+const startScreen = document.getElementById("startScreen");
+const done = document.getElementById("done");
+const barFill = document.getElementById("barFill");
+
+const commands = [
+  "accessing mainframe...",
+  "bypassing firewall...",
+  "decrypting payload...",
+  "injecting packets...",
+  "connecting to node...",
+  "root access granted ✔",
+  "scanning system ███░░░",
+  "uploading exploit kit...",
+  "secure tunnel established...",
+  "downloading database...",
+  "erasing logs...",
+  "spoofing IP...",
+  "bruteforce SSH █████",
+  "LEVEL 7 ACCESS",
+  "satellite sync...",
+  "firewall breached...",
+  "remote shell active...",
+  "kernel injection...",
+  "memory dump...",
+  "tracking target...",
+  "security disabled...",
+  "backdoor created ✔",
+  "data transfer..."
+];
+
+function rand() {
+  return commands[Math.floor(Math.random() * commands.length)];
+}
+
+function addLine() {
+  const line = document.createElement("div");
+  line.textContent = "> " + rand();
+  screen.appendChild(line);
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+/* FAST LOOP */
+let running = false;
+
+function loop() {
+  if (!running) return;
+
+  addLine();
+  setTimeout(loop, Math.random() * 120 + 20);
+}
+
+/* FULLSCREEN */
+function goFullscreen() {
+  const el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+
+/* START */
+startBtn.addEventListener("click", () => {
+  startScreen.style.display = "none";
+
+  goFullscreen();
+  running = true;
+  loop();
+
+  setTimeout(() => {
+    done.style.display = "flex";
+
+    let p = 0;
+    const interval = setInterval(() => {
+      p += Math.random() * 7 + 2;
+      if (p > 100) p = 100;
+
+      barFill.style.width = p + "%";
+
+      if (p === 100) clearInterval(interval);
+    }, 80);
+  }, 15000);
+});
+</script>
+
+</body>
+</html>
